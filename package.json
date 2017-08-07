@@ -1,19 +1,20 @@
 {
-  "name": "shadowsocks-manager",
-  "version": "0.8.32",
-  "description": "A shadowsocks manager tool for multi user and traffic control.",
+  "name": "shadowsocks-manager-ipv6",
+  "version": "0.8.32.1",
+  "description": "A shadowsocks manager tool for multi user and traffic control, which also support ipv6",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "build": "gulp",
     "prepublish": "gulp"
   },
-  "author": "Gu Yuteng <igyteng@gmail.com>",
+  "author": "Gu Yuteng <igyteng@gmail.com>; LoveSy <shana@zju.eud.cn>",
   "license": "GPL",
   "keywords": [
     "shadowsocks",
     "manager",
-    "gfw"
+    "gfw",
+    "ipv6"
   ],
   "devDependencies": {
     "babel-cli": "^6.16.0",
@@ -65,12 +66,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shadowsocks/shadowsocks-manager.git"
+    "url": "git+git@github.com:yujincheng08/shadowsocks-manager-ipv6.git"
   },
   "bugs": {
-    "url": "https://github.com/shadowsocks/shadowsocks-manager/issues"
+    "url": "https://github.com/yujincheng08/shadowsocks-manager-ipv6/issues"
   },
-  "homepage": "https://github.com/shadowsocks/shadowsocks-manager#readme",
+  "homepage": "https://github.com/yujincheng08/shadowsocks-manager-ipv6#readme",
   "bin": {
     "ssmgr": "./bin/ssmgr"
   }

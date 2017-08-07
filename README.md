@@ -28,15 +28,15 @@ Node.js 6.*
 ### From source:
 
 ```
-git clone https://github.com/shadowsocks/shadowsocks-manager.git
-cd shadowsocks-manager
+git clone https://github.com/yujincheng08/shadowsocks-manager-ipv6.git
+cd shadowsocks-manager-ipv6
 npm i
 ```
 use `node server.js` to run this program.  
 
 ### From npm:
 ```
-npm i -g shadowsocks-manager
+npm i -g shadowsocks-manager-ipv6
 ```
 use `ssmgr` to run this program.
 
