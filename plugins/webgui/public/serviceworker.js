@@ -1,8 +1,8 @@
 // importScripts('/libs/serviceworker-cache-polyfill.js');
 
-var ONLINE_CACHE_NAME = '2017-08-07 07:14:21';
+var ONLINE_CACHE_NAME = '2017-08-08 08:32:41';
 var onlineCacheUrl = [
-  '/',
+  // '/',
 
   '/libs/angular.min.js',
   '/libs/angular-inview.js',
