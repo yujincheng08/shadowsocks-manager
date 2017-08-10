@@ -2,7 +2,7 @@ const app = angular.module('app');
 const window = require('window');
 const cdn = window.cdn || '';
 
-app.factory('languageDialog' , [ '$mdDialog', $mdDialog => {
+app.factory('serverChartDialog' , [ '$mdDialog', ($mdDialog) => {
   const publicInfo = {};
   const hide = () => {
     return $mdDialog.hide()
@@ -23,29 +23,20 @@ app.factory('languageDialog' , [ '$mdDialog', $mdDialog => {
     return false;
   };
   const dialog = {
-    templateUrl: `${ cdn }/public/views/dialog/language.html`,
+    templateUrl: `${ cdn }/public/views/dialog/serverChart.html`,
     escapeToClose: false,
     locals: { bind: publicInfo },
     bindToController: true,
-    controller: ['$scope', '$translate', '$localStorage', 'bind', function($scope, $translate, $localStorage, bind) {
+    controller: ['$scope', 'bind', function($scope, bind) {
       $scope.publicInfo = bind;
-      $scope.publicInfo.myLanguage = $localStorage.language || navigator.language || 'zh-CN';
-      $scope.chooseLanguage = () => {
-        $translate.use($scope.publicInfo.myLanguage);
-        $localStorage.language = $scope.publicInfo.myLanguage;
-        $scope.publicInfo.hide();
-      };
-      $scope.languages = [
-        { id: 'zh-CN', name: '中文' },
-        { id: 'en-US', name: 'English' },
-      ];
     }],
     clickOutsideToClose: true,
   };
-  const show = (accountMethod, accountInfo) => {
+  const show = serverChart => {
     if(isDialogShow()) {
       return dialogPromise;
     }
+    publicInfo.serverChart = serverChart;
     dialogPromise = $mdDialog.show(dialog);
     return dialogPromise;
   };
