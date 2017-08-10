@@ -1,9 +1,17 @@
 const app = angular.module('app');
 
-app.controller('AdminServerController', ['$scope', '$http', '$state', 'moment', '$localStorage', 'adminApi', '$timeout', '$interval',
-  ($scope, $http, $state, moment, $localStorage, adminApi, $timeout, $interval) => {
+app.controller('AdminServerController', ['$scope', '$http', '$state', 'moment', '$localStorage', 'adminApi', '$timeout', '$interval', 'serverChartDialog',
+  ($scope, $http, $state, moment, $localStorage, adminApi, $timeout, $interval, serverChartDialog) => {
     $scope.setTitle('服务器');
-    const scaleLabel = (number) => {
+    $scope.setMenuRightButton('timeline');
+    if(!$localStorage.admin.serverChart) {
+      $localStorage.admin.serverChart = { showChart: true };
+    }
+    $scope.serverChart = $localStorage.admin.serverChart;
+    $scope.$on('RightButtonClick', () => {
+      serverChartDialog.show($scope.serverChart);
+    });
+    const scaleLabel = number => {
       if(number < 1) {
         return number.toFixed(1) +' B';
       } else if (number < 1000) {
@@ -68,16 +76,21 @@ app.controller('AdminServerController', ['$scope', '$http', '$state', 'moment', 
               server.flow.week = flow.week;
               server.flow.month = flow.month;
             });
-            adminApi.getServerFlowLastHour(server.id).then(success => {
-              if(!server.chart) {
-                server.chart = {
-                  data: [[]],
-                };
-              }
-              success.flow.forEach((number, index) => {
-                server.chart.data[0][index] = number;
-              });
-            });
+            if($scope.serverChart.showChart) {
+              $timeout(() => {
+                adminApi.getServerFlowLastHour(server.id)
+                .then(success => {
+                  if(!server.chart) {
+                    server.chart = {
+                      data: [[]],
+                    };
+                  }
+                  success.flow.forEach((number, index) => {
+                    server.chart.data[0][index] = number;
+                  });
+                });
+              }, index * 1000);
+            }
           });
         } else {
           $localStorage.admin.serverInfo = {
@@ -89,16 +102,21 @@ app.controller('AdminServerController', ['$scope', '$http', '$state', 'moment', 
             adminApi.getServerFlow(server.id).then(flow => {
               server.flow = flow;
             });
-            adminApi.getServerFlowLastHour(server.id).then(success => {
-              if(!server.chart) {
-                server.chart = {
-                  data: [[]],
-                };
-              }
-              success.flow.forEach((number, index) => {
-                server.chart.data[0][index] = number;
-              });
-            });
+            if($scope.serverChart.showChart) {
+              $timeout(() => {
+                adminApi.getServerFlowLastHour(server.id)
+                .then(success => {
+                  if(!server.chart) {
+                    server.chart = {
+                      data: [[]],
+                    };
+                  }
+                  success.flow.forEach((number, index) => {
+                    server.chart.data[0][index] = number;
+                  });
+                });
+              }, index * 1000);
+            }
           });
         }
       });
@@ -106,13 +124,13 @@ app.controller('AdminServerController', ['$scope', '$http', '$state', 'moment', 
     updateServerInfo();
     $scope.$on('visibilitychange', (event, status) => {
       if(status === 'visible') {
-        if($localStorage.admin.serverInfo && Date.now() - $localStorage.admin.serverInfo.time >= 20 * 1000) {
+        if($localStorage.admin.serverInfo && Date.now() - $localStorage.admin.serverInfo.time >= 30 * 1000) {
           updateServerInfo();
         }
       }
     });
     $scope.setInterval($interval(() => {
-      if($localStorage.admin.serverInfo && Date.now() - $localStorage.admin.serverInfo.time >= 90 * 1000) {
+      if(document.visibilityState === 'visible' && $localStorage.admin.serverInfo && Date.now() - $localStorage.admin.serverInfo.time >= 90 * 1000) {
         updateServerInfo();
       }
     }, 15 * 1000));
