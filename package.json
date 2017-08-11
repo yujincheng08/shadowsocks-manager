@@ -1,6 +1,6 @@
 {
   "name": "shadowsocks-manager-ipv6",
-  "version": "0.8.39",
+  "version": "0.8.43",
   "description": "A shadowsocks manager tool for multi user and traffic control, which also support ipv6",
   "main": "server.js",
   "scripts": {
