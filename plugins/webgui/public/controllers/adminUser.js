@@ -91,15 +91,15 @@ app.controller('AdminUserController', ['$scope', '$state', '$stateParams', 'admi
     });
   }
 ])
-.controller('AdminUserPageController', ['$scope', '$state', '$stateParams', '$http', '$mdDialog', 'adminApi', 'orderDialog', 'confirmDialog', 'emailDialog',
-  ($scope, $state, $stateParams, $http, $mdDialog, adminApi, orderDialog, confirmDialog, emailDialog) => {
+.controller('AdminUserPageController', ['$scope', '$state', '$stateParams', '$http', '$mdDialog', 'adminApi', 'orderDialog', 'confirmDialog', 'emailDialog', 'addAccountDialog',
+  ($scope, $state, $stateParams, $http, $mdDialog, adminApi, orderDialog, confirmDialog, emailDialog, addAccountDialog) => {
     $scope.setTitle('用户信息');
     $scope.setMenuButton('arrow_back', 'admin.user');
     const userId = $stateParams.userId;
     const getUserData = () => {
       adminApi.getUserData(userId).then(success => {
         $scope.user = success.user;
-        $scope.account = success.account;
+        $scope.server = success.server;
         $scope.alipayOrders = success.alipayOrders;
         $scope.paypalOrders = success.paypalOrders;
         $scope.user.account.forEach(f => {
@@ -107,6 +107,7 @@ app.controller('AdminUserController', ['$scope', '$state', '$stateParams', 'admi
             f.lastConnect = success.lastConnect;
           });
         });
+        $scope.user.macAccount = success.macAccount;
       }).catch(err => {
         $state.go('admin.user');
       });
@@ -125,27 +126,28 @@ app.controller('AdminUserController', ['$scope', '$state', '$stateParams', 'admi
 
       });
     };
-    const openDialog = () => {
-      $scope.dialog = $mdDialog.show({
-        templateUrl: '/public/views/admin/pickAccount.html',
-        parent: angular.element(document.body),
-        clickOutsideToClose:true,
-        preserveScope: true,
-        scope: $scope,
+    $scope.deleteMacAccount = accountId => {
+      confirmDialog.show({
+        text: '删除该账号？',
+        cancel: '取消',
+        confirm: '删除',
+        error: '删除账号失败',
+        fn: function () { return $http.delete('/api/admin/account/mac/', {
+          params: { id: accountId },
+        }); },
+      }).then(() => {
+        getUserData();
+      }).catch(() => {
+
       });
     };
     $scope.setFabButton(() => {
-      openDialog();
-    });
-    $scope.confirmAccount = () => {
-      $mdDialog.hide($scope.dialog);
-      const promise = [];
-      $scope.account.forEach(f => {
-        if(f.isChecked) {
-          promise.push($http.put(`/api/admin/user/${ userId }/${ f.id }`));
-        }
+      addAccountDialog.show(userId, $scope.user.account, $scope.server).then(success => {
+        getUserData();
       });
-      Promise.all(promise).then(success => {
+    });
+    $scope.editMacAccount = account => {
+      addAccountDialog.edit(account, $scope.user.account, $scope.server).then(success => {
         getUserData();
       });
     };
