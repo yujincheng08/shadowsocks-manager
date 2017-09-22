@@ -86,7 +86,7 @@ const checkAccountTime = {};
 
 const deleteCheckAccountTimePort = port => {
   const reg = new RegExp('^\d{1,3}\|' + port + '$');
-  for(cat in checkAccountTime) {
+  for(const cat in checkAccountTime) {
     if(cat.match(reg)) {
       delete checkAccountTime[cat];
     }
@@ -94,7 +94,7 @@ const deleteCheckAccountTimePort = port => {
 };
 const deleteCheckAccountTimeServer = Server => {
   const reg = new RegExp('^' + Server + '\|\d{1,5}$');
-  for(cat in checkAccountTime) {
+  for(const cat in checkAccountTime) {
     if(cat.match(reg)) {
       delete checkAccountTime[cat];
     }

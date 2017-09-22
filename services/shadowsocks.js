@@ -45,7 +45,7 @@ const connect = () => {
       setExistPort(flow);
       const realFlow = compareWithLastFlow(flow, lastFlow);
 
-      for(rf in realFlow) {
+      for(const rf in realFlow) {
         if(realFlow[rf]) {
           (function(port) {
             if(!clientIp[+port]) { clientIp[+port] = []; }
@@ -138,7 +138,7 @@ const compareWithLastFlow = (flow, lastFlow) => {
   }
   const realFlow = {};
   if(!lastFlow) {
-    for(f in flow) {
+    for(const f in flow) {
       if(flow[f] <= 0) { delete flow[f]; }
     }
     return flow;
@@ -153,7 +153,7 @@ const compareWithLastFlow = (flow, lastFlow) => {
   if(Object.keys(realFlow).map(m => realFlow[m]).sort((a, b) => a > b)[0] < 0) {
     return flow;
   }
-  for(r in realFlow) {
+  for(const r in realFlow) {
     if(realFlow[r] <= 0) { delete realFlow[r]; }
   }
   return realFlow;
