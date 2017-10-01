@@ -28,15 +28,19 @@ const loginFail = ip => {
 };
 
 const getIp = address => {
-  if(net.isIP(address)) {
-    return Promise.resolve(address);
+  let myAddress = address;
+  if(address.indexOf(':') >= 0) {
+    myAddress = address.split(':')[1];
+  }
+  if(net.isIP(myAddress)) {
+    return Promise.resolve(myAddress);
   }
   return new Promise((resolve, reject) => {
-    dns.lookup(address, (err, address, family) => {
+    dns.lookup(myAddress, (err, myAddress, family) => {
       if(err) {
         return reject(err);
       }
-      return resolve(address);
+      return resolve(myAddress);
     });
   });
 };
@@ -77,7 +81,7 @@ const getAccountForUser = async (mac, ip) => {
   const account = accounts.filter(a => {
     return a.accountId === myAccountId;
   })[0];
-  const servers = await serverPlugin.list();
+  const servers = await serverPlugin.list({ status: false });
   const server = servers.filter(s => {
     return s.id === myServerId;
   })[0];
@@ -94,6 +98,8 @@ const getAccountForUser = async (mac, ip) => {
       return {
         name: f.name,
         address: success,
+        port: account.port + f.shift,
+        method: f.method,
       };
     });
   });

@@ -1,6 +1,6 @@
 // importScripts('/libs/serviceworker-cache-polyfill.js');
 
-const ONLINE_CACHE_NAME = '2017-09-22 12:33:28' + ' <%= serviceWorkerTime%>';
+const ONLINE_CACHE_NAME = '2017-09-30 15:28:29' + ' <%= serviceWorkerTime%>';
 const isSWOpen = JSON.parse('<%= serviceWorker%>');
 
 const emptyCacheUrl = [];
@@ -27,8 +27,7 @@ const onlineCacheUrl = [
   '/libs/angular-translate.min.js',
   '/libs/bundle.js',
 
-  '/libs/favicon.png',
-  '/libs/home.png',
+  '/favicon.png',
 
   '/libs/style.css',
   '/libs/angular-material.min.css',
@@ -162,6 +161,6 @@ self.addEventListener('push', function (event) {
   event.waitUntil(
     self.registration.showNotification(title, {
       body: data.options.body,
-      icon: '/libs/favicon.png',
+      icon: '/favicon.png',
     }));
 });

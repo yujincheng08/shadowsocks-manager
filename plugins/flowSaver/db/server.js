@@ -17,7 +17,7 @@ const createTable = async () => {
     table.string('password');
     table.float('scale').defaultTo(1);
     table.string('method').defaultTo('aes-256-cfb');
-    table.string('comment').defaultTo("");
+    table.string('comment').defaultTo('');
   });
   const hasColumnScale = await knex.schema.hasColumn(tableName, 'scale');
   if(!hasColumnScale) {
@@ -29,6 +29,12 @@ const createTable = async () => {
   if(!hasColumnComment) {
     await knex.schema.table(tableName, function(table) {
       table.string('comment').defaultTo("");
+    });
+  }
+  const hasColumnShift = await knex.schema.hasColumn(tableName, 'shift');
+  if(!hasColumnShift) {
+    await knex.schema.table(tableName, function(table) {
+      table.integer('shift').defaultTo(0);
     });
   }
   const list = await knex('server').select(['name', 'host', 'port', 'password']);

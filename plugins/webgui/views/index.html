@@ -7,14 +7,14 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="<%= title%>">
-    <link rel="apple-touch-startup-image" href="<%= cdn%>/libs/favicon.png">
-    <link rel="apple-touch-icon" href="<%= cdn%>/libs/favicon.png">
-    <meta name="msapplication-TileImage" content="<%= cdn%>/libs/favicon.png">
+    <link rel="apple-touch-startup-image" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <meta name="msapplication-TileImage" content="/favicon.png">
     <meta name="msapplication-TileColor" content="<%= config.browserColor%>">
     <meta name="theme-color" content="<%= config.browserColor%>">
     <link rel="stylesheet" href="<%= cdn%>/libs/style.css">
     <link rel="stylesheet" href="<%= cdn%>/libs/angular-material.min.css">
-    <link rel="shortcut icon" href="<%= cdn%>/libs/favicon.png">
+    <link rel="shortcut icon" href="/favicon.png">
     <link rel="manifest" href="/manifest.json">
     <title><%= title%></title>
     <base href="/">
@@ -56,7 +56,6 @@
     </script>
     <% } %>
     <script src="/libs/bundle.js"></script>
-    <script src="https://www.paypalobjects.com/api/checkout.js"></script>
     <div ng-controller="MainController" layout-fill>
         <div layout-fill layout="row" layout-align="center center" ng-show="mainLoading">
             <div layout="column" layout-align="center center">
@@ -65,6 +64,10 @@
         </div>
         <div ng-hide="mainLoading" ui-view layout-fill></div>
     </div>
+    <% if (paypal) { %>
+        <script async src="https://www.paypalobjects.com/api/checkout.js"></script>
+    <% } %>
+    
 </body>
 
 </html>
