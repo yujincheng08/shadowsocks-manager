@@ -53,15 +53,11 @@ here is the `Dockerfile`
 FROM ubuntu:16.04
 MAINTAINER gyteng <igyteng@gmail.com>
 RUN apt-get update && \
-    apt-get install curl git sudo -y && \
+    apt-get install net-tools curl git sudo software-properties-common -y && \
+    add-apt-repository ppa:max-c-lv/shadowsocks-libev -y && \
     curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
-    apt-get install -y nodejs && \
-    npm i -g shadowsocks-manager && \
-    git clone https://github.com/shadowsocks/shadowsocks-libev.git ~/shadowsocks && \
-    mkdir -p ~/build-area/ && \
-    cp ~/shadowsocks/scripts/build_deb.sh ~/build-area/ && \
-    cd ~/build-area && \
-    ./build_deb.sh
+    apt-get install -y nodejs shadowsocks-libev && \
+    npm i -g shadowsocks-manager
 ENTRYPOINT ["/usr/bin/ssmgr"]
 ```
 
@@ -74,7 +70,7 @@ For example, you can run this command:
   config file:  
   ```
   type: s
-  empty: false
+
   shadowsocks:
     address: 127.0.0.1:6001
   manager:
@@ -124,15 +120,10 @@ The listening address in `--manager-address` of step 1 and in `shadowsocks -> ad
 ```
 
 ### Plugins
-`[================100%]` [cli](https://github.com/shadowsocks/shadowsocks-manager/blob/master/plugins/cli/README.md)  
-`[================100%]` [telegram](https://github.com/shadowsocks/shadowsocks-manager/blob/master/plugins/telegram/README.md)  
-`[================100%]` [flowSaver](https://github.com/shadowsocks/shadowsocks-manager/blob/master/plugins/flowSaver/README.md)  
-`[================100%]` [email]()  
-`[================100%]` [user]()  
-`[================100%]` [freeAccount](https://github.com/shadowsocks/shadowsocks-manager/blob/master/plugins/freeAccount/README.md)  
-`[================100%]` [account]()  
-`[================95%-]` [webgui](https://github.com/shadowsocks/shadowsocks-manager/blob/master/plugins/webgui/README.md)  
-`[================100%]` [alipay]()  
+[cli](https://github.com/shadowsocks/shadowsocks-manager/blob/master/plugins/cli/README.md)  
+[telegram](https://github.com/shadowsocks/shadowsocks-manager/blob/master/plugins/telegram/README.md)  
+[freeAccount](https://github.com/shadowsocks/shadowsocks-manager/blob/master/plugins/freeAccount/README.md)  
+[webgui](https://github.com/shadowsocks/shadowsocks-manager/blob/master/plugins/webgui/README.md)  
 
 ### Parameter
 
@@ -147,7 +138,6 @@ Usage: ssmgr [options]
     -V, --version                output the version number
     -c, --config [file]          config file, default: ~/.ssmgr/default.yml
     -d, --db [file]              sqlite3 file, sample: ~/.ssmgr/db.sqlite
-    -e, --empty                  clean database
     -t, --type [type]            type, s for server side, m for manager side
     -s, --shadowsocks [address]  ss-manager address, sample: 127.0.0.1:6001
     -m, --manager [address]      manager address, sample: 0.0.0.0:6002
@@ -174,6 +164,10 @@ Join the group if you have some problem: [https://t.me/ssmgr](https://t.me/ssmgr
 * [Vultr](http://www.vultr.com/?ref=6926595)
 
 * [AlibabaCloud](https://account-intl.aliyun.com/register/intl_register.htm?biz_params=%7B%22intl%22%3A%22%7B%5C%22referralCode%5C%22%3A%5C%22koa26v%5C%22%7D%22%7D)
+
+* [BandwagonHost](https://bandwagonhost.com/aff.php?aff=19999)
+
+* [dediserve](https://manage.dediserve.com/?affid=841)
 
 ### Donate
 If you find this project helpful, please consider making a donation:  

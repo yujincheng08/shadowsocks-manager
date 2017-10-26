@@ -46,6 +46,7 @@ module.exports = {
   '周期：': 'Duration:',
   '到期时间：': 'Due Date:',
   '最近连接：': 'Last Connected:',
+  '备注：': 'Comments:',
   '修改密码': 'Change Password',
   '修改密码成功': 'Change password success',
   '修改密码失败': 'Change password fail',
@@ -131,4 +132,10 @@ module.exports = {
   '原密码': 'Old password',
   '新密码': 'New password',
   '重复新密码': 'New password again',
+
+  '类型': 'Type',
+  '端口': 'Port',
+  '流量(MB)': 'Data Usage(MB)',
+
+  '接收消息推送': 'Receive push message',
 };

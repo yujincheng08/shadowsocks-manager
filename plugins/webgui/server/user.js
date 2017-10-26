@@ -76,7 +76,7 @@ exports.getOneAccount = (req, res) => {
 exports.getServers = (req, res) => {
   const userId = req.session.user;
   let servers;
-  knex('server').select(['id', 'host', 'name', 'method', 'scale', 'comment']).orderBy('name')
+  knex('server').select(['id', 'host', 'name', 'method', 'scale', 'comment', 'shift']).orderBy('name')
   .then(success => {
     servers = success;
     return account.getAccount({
@@ -118,10 +118,10 @@ exports.getServers = (req, res) => {
 
 exports.getServerPortFlow = (req, res) => {
   const serverId = +req.params.serverId;
-  const port = +req.params.port;
+  const accountId = +req.params.accountId;
   let account = null;
   knex('account_plugin').select().where({
-    port,
+    id: accountId,
   }).then(success => {
     if(!success.length) {
       return Promise.reject('account not found');
@@ -152,7 +152,7 @@ exports.getServerPortFlow = (req, res) => {
         success[0].value = JSON.parse(success[0].value);
         return success[0].value.multiServerFlow;
       }).then(isMultiServerFlow => {
-        return flow.getServerPortFlow(serverId, port, timeArray, isMultiServerFlow);
+        return flow.getServerPortFlow(serverId, accountId, timeArray, isMultiServerFlow);
       });
     } else {
       return [ 0 ];
@@ -167,8 +167,8 @@ exports.getServerPortFlow = (req, res) => {
 
 exports.getServerPortLastConnect = (req, res) => {
   const serverId = +req.params.serverId;
-  const port = +req.params.port;
-  flow.getlastConnectTime(serverId, port)
+  const accountId = +req.params.accountId;
+  flow.getlastConnectTime(serverId, accountId)
   .then(success => {
     res.send(success);
   }).catch(err => {

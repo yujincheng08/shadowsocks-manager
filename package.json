@@ -1,6 +1,6 @@
 {
   "name": "shadowsocks-manager-ipv6",
-  "version": "0.8.81",
+  "version": "0.10.1",
   "description": "A shadowsocks manager tool for multi user and traffic control, which also support ipv6",
   "main": "server.js",
   "scripts": {
@@ -29,7 +29,7 @@
     "webpack-uglify-js-plugin": "^1.1.9"
   },
   "dependencies": {
-    "alipay-ftof": "0.0.2",
+    "alipay-ftof": "0.1.4",
     "body-parser": "^1.15.2",
     "commander": "^2.9.0",
     "compression": "^1.6.2",
@@ -54,6 +54,7 @@
     "paypal-rest-sdk": "^1.7.1",
     "request": "^2.75.0",
     "request-promise": "^4.1.1",
+    "socks": "^1.1.10",
     "sqlite3": "^3.1.4",
     "web-push": "^3.2.2",
     "webpack": "^1.15.0",

@@ -4,12 +4,14 @@ const sessionParser = appRequire('plugins/webgui/index').sessionParser;
 const home = appRequire('plugins/webgui/server/home');
 const user = appRequire('plugins/webgui/server/user');
 const admin = appRequire('plugins/webgui/server/admin');
+const adminUser = appRequire('plugins/webgui/server/adminUser');
 const adminServer = appRequire('plugins/webgui/server/adminServer');
 const adminFlow = appRequire('plugins/webgui/server/adminFlow');
 const adminSetting = appRequire('plugins/webgui/server/adminSetting');
 const adminNotice = appRequire('plugins/webgui/server/adminNotice');
 const adminAccount = appRequire('plugins/webgui/server/adminAccount');
 const push = appRequire('plugins/webgui/server/push');
+const os = require('os');
 const path = require('path');
 const knex = appRequire('init/knex').knex;
 const config = appRequire('services/config').all();
@@ -70,11 +72,11 @@ app.get('/api/admin/flow/:serverId(\\d+)', isAdmin, adminFlow.getServerFlow);
 app.get('/api/admin/flow/:serverId(\\d+)/lastHour', isAdmin, adminFlow.getServerLastHourFlow);
 app.get('/api/admin/flow/:serverId(\\d+)/user', isAdmin, adminFlow.getServerUserFlow);
 app.get('/api/admin/flow/account/:accountId(\\d+)', isAdmin, adminFlow.getAccountServerFlow);
-app.get('/api/admin/flow/:serverId(\\d+)/:port(\\d+)', isAdmin, adminFlow.getServerPortFlow);
-app.get('/api/admin/flow/:serverId(\\d+)/:port(\\d+)/lastConnect', isAdmin, adminFlow.getServerPortLastConnect);
+app.get('/api/admin/flow/:serverId(\\d+)/:accountId(\\d+)', isAdmin, adminFlow.getServerPortFlow);
+app.get('/api/admin/flow/:serverId(\\d+)/:accountId(\\d+)/lastConnect', isAdmin, adminFlow.getServerPortLastConnect);
 
-app.get('/api/admin/user', isAdmin, admin.getUsers);
-app.post('/api/admin/user/add', isAdmin, admin.addUser);
+app.get('/api/admin/user', isAdmin, adminUser.getUsers);
+app.post('/api/admin/user/add', isAdmin, adminUser.addUser);
 app.get('/api/admin/user/recentSignUp', isAdmin, admin.getRecentSignUpUsers);
 app.get('/api/admin/user/recentLogin', isAdmin, admin.getRecentLoginUsers);
 
@@ -84,7 +86,7 @@ app.post('/api/admin/user/:userId(\\d+)/sendEmail', isAdmin, admin.sendUserEmail
 app.put('/api/admin/user/:userId(\\d+)/:accountId(\\d+)', isAdmin, admin.setUserAccount);
 app.delete('/api/admin/user/:userId(\\d+)', isAdmin, admin.deleteUser);
 app.delete('/api/admin/user/:userId(\\d+)/:accountId(\\d+)', isAdmin, admin.deleteUserAccount);
-app.get('/api/admin/user/:port(\\d+)/lastConnect', isAdmin, admin.getUserPortLastConnect);
+app.get('/api/admin/user/:accountId(\\d+)/lastConnect', isAdmin, admin.getUserPortLastConnect);
 
 app.get('/api/admin/alipay', isAdmin, admin.getOrders);
 app.get('/api/admin/alipay/recentOrder', isAdmin, admin.getRecentOrders);
@@ -113,8 +115,8 @@ app.get('/api/user/notice', isUser, user.getNotice);
 app.get('/api/user/account', isUser, user.getAccount);
 app.get('/api/user/account/:accountId(\\d+)', isUser, user.getOneAccount);
 app.get('/api/user/server', isUser, user.getServers);
-app.get('/api/user/flow/:serverId(\\d+)/:port(\\d+)', isUser, user.getServerPortFlow);
-app.get('/api/user/flow/:serverId(\\d+)/:port(\\d+)/lastConnect', isUser, user.getServerPortLastConnect);
+app.get('/api/user/flow/:serverId(\\d+)/:accountId(\\d+)', isUser, user.getServerPortFlow);
+app.get('/api/user/flow/:serverId(\\d+)/:accountId(\\d+)/lastConnect', isUser, user.getServerPortLastConnect);
 app.put('/api/user/:accountId(\\d+)/password', isUser, user.changeShadowsocksPassword);
 app.get('/api/user/multiServerFlow', isUser, user.getMultiServerFlowStatus);
 
@@ -136,6 +138,28 @@ if(config.plugins.webgui.gcmAPIKey && config.plugins.webgui.gcmSenderId) {
   app.post('/api/push/client', push.client);
   app.delete('/api/push/client', push.deleteClient);
 }
+
+app.get('/favicon.png', (req, res) => {
+  let file = './libs/favicon.png';
+  let options = {
+    root: './plugins/webgui/'
+  };
+  const iconPath = config.plugins.webgui.icon;
+  if(iconPath) {
+    const ssmgrPath = path.resolve(os.homedir(), './.ssmgr/');
+    if (iconPath[0] === '/' || iconPath[0] === '.') {
+      options = {};
+      file = path.resolve(iconPath);
+    } else if (iconPath[0] === '~') {
+      file = '.' + iconPath.substr(1);
+      options.root = os.homedir();
+    } else {
+      file = iconPath;
+      options.root = ssmgrPath;
+    }
+  }
+  res.sendFile(file, options);
+});
 
 const manifest = appRequire('plugins/webgui/views/manifest').manifest;
 app.get('/manifest.json', (req, res) => {
@@ -206,6 +230,7 @@ const homePage = (req, res) => {
       cdn,
       analytics,
       config: configForFrontend,
+      paypal: !!(config.plugins.paypal && config.plugins.paypal.use),
     });
   });
 };
