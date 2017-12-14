@@ -19,6 +19,10 @@ If you want to use the old version, please switch to [this branch](https://githu
 
 [https://wall.gyteng.com](https://wall.gyteng.com)
 
+## FreeAccount Demo:
+
+[https://free.ssmgr.top](https://free.ssmgr.top)
+
 ## Dependencies
 
 Node.js 6.*
@@ -68,7 +72,11 @@ ENTRYPOINT ["/usr/bin/ssmgr"]
 ### Usage
 1. Start shadowsocks with [manager API](https://github.com/shadowsocks/shadowsocks/wiki/Manage-Multiple-Users), it supports `shadowsocks-python` and `shadowsocks-libev`.
 For example, you can run this command:  
-`ss-manager -m aes-256-cfb -u --manager-address 127.0.0.1:6001`
+```
+ss-manager -m aes-256-cfb -u --manager-address 127.0.0.1:6001
+ or
+ssserver -m aes-256-cfb -p 12345 -k abcedf --manager-address 127.0.0.1:6001
+```
 2. run ssmgr with type s:
 
   config file:  

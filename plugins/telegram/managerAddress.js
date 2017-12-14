@@ -1,5 +1,3 @@
-'use strict';
-
 const config = appRequire('services/config').all();
 const addridx = config.manager.address.lastIndexOf(':');
 const host = config.manager.address.substring(0,addridx);
