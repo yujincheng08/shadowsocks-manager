@@ -51,6 +51,7 @@ app.put('/api/admin/server/:serverId(\\d+)', isAdmin, adminServer.editServer);
 app.delete('/api/admin/server/:serverId(\\d+)', isAdmin, adminServer.deleteServer);
 
 app.get('/api/admin/account', isAdmin, admin.getAccount);
+app.get('/api/admin/macAccount', isAdmin, admin.getAllMacAccount);
 app.get('/api/admin/account/port/:port(\\d+)', isAdmin, admin.getAccountByPort);
 app.get('/api/admin/account/:accountId(\\d+)', isAdmin, admin.getOneAccount);
 app.get('/api/admin/account/:serverId(\\d+)/:accountId(\\d+)/ip', isAdmin, admin.getAccountIp);
@@ -110,6 +111,8 @@ app.put('/api/admin/setting/base', isAdmin, adminSetting.modifyBase);
 app.get('/api/admin/setting/mail', isAdmin, adminSetting.getMail);
 app.put('/api/admin/setting/mail', isAdmin, adminSetting.modifyMail);
 
+app.post('/api/admin/setting/changePassword', isAdmin, adminSetting.changePassword);
+
 app.get('/api/user/notice', isUser, user.getNotice);
 app.get('/api/user/account', isUser, user.getAccount);
 app.get('/api/user/account/:accountId(\\d+)', isUser, user.getOneAccount);
@@ -131,7 +134,17 @@ app.post('/api/user/paypal/execute', isUser, user.executePaypalOrder);
 app.post('/api/user/alipay/callback', user.alipayCallback);
 app.post('/api/user/paypal/callback', user.paypalCallback);
 
-app.post('/api/user/changePassword', user.changePassword);
+app.post('/api/user/changePassword', isUser, user.changePassword);
+
+if(config.plugins.webgui_telegram && config.plugins.webgui_telegram.use) {
+  const telegram = appRequire('plugins/webgui_telegram/account');
+  app.get('/api/user/telegram/code', isUser, user.getTelegramCode);
+  app.get('/api/admin/telegram/code', isAdmin, adminSetting.getTelegramCode);
+  app.post('/api/user/telegram/unbind', isUser, user.unbindTelegram);
+  app.post('/api/admin/telegram/unbind', isAdmin, adminSetting.unbindTelegram);
+  app.get('/api/user/telegram/qrcode/:qrcodeId', telegram.qrcode);
+  app.post('/api/user/telegram/login', telegram.login);
+}
 
 if(config.plugins.webgui.gcmAPIKey && config.plugins.webgui.gcmSenderId) {
   app.post('/api/push/client', push.client);
@@ -183,6 +196,7 @@ const configForFrontend = {
   paypal: config.plugins.paypal && config.plugins.paypal.use,
   paypalMode: config.plugins.paypal && config.plugins.paypal.mode,
   macAccount: config.plugins.macAccount && config.plugins.macAccount.use,
+  telegram: config.plugins.webgui_telegram && config.plugins.webgui_telegram.use,
 };
 
 const cdn = config.plugins.webgui.cdn;

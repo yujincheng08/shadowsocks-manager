@@ -3,8 +3,23 @@ const logger = log4js.getLogger('alipay');
 const cron = appRequire('init/cron');
 const config = appRequire('services/config').all();
 const alipayf2f = require('alipay-ftof');
+const fs = require('fs');
 let alipay_f2f;
 if(config.plugins.alipay && config.plugins.alipay.use) {
+  try {
+    const privateKey = fs.readFileSync(config.plugins.alipay.merchantPrivateKey, 'utf8').toString();
+    config.plugins.alipay.merchantPrivateKey = privateKey
+    .replace(/-----BEGIN RSA PRIVATE KEY-----/, '')
+    .replace(/-----END RSA PRIVATE KEY-----/, '')
+    .replace(/\n/g, '');
+  } catch (err) {}
+  try {
+    const publicKey = fs.readFileSync(config.plugins.alipay.alipayPublicKey, 'utf8').toString();
+    config.plugins.alipay.alipayPublicKey = publicKey
+    .replace(/-----BEGIN PUBLIC KEY-----/, '')
+    .replace(/-----END PUBLIC KEY-----/, '')
+    .replace(/\n/g, '');
+  } catch (err) {}
   alipay_f2f = new alipayf2f({
     appid: config.plugins.alipay.appid,
     notifyUrl: config.plugins.alipay.notifyUrl,
@@ -12,6 +27,12 @@ if(config.plugins.alipay && config.plugins.alipay.use) {
     alipayPublicKey: '-----BEGIN PUBLIC KEY-----\n' + config.plugins.alipay.alipayPublicKey + '\n-----END PUBLIC KEY-----',
     gatewayUrl: config.plugins.alipay.gatewayUrl,
   });
+}
+
+const isTelegram = config.plugins.webgui_telegram && config.plugins.webgui_telegram.use;
+let telegram;
+if(isTelegram) {
+  telegram = appRequire('plugins/webgui_telegram/admin');
 }
 
 const knex = appRequire('init/knex').knex;
@@ -123,6 +144,7 @@ cron.minute(async () => {
       push.pushMessage('支付成功', {
         body: `订单[ ${ order.orderId } ][ ${ order.amount } ]支付成功`,
       });
+      isTelegram && telegram.push(`订单[ ${ order.orderId } ][ ${ order.amount } ]支付成功`);
       return account.setAccountLimit(userId, accountId, order.orderType)
       .then(() => {
         return knex('alipay').update({

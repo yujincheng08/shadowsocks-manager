@@ -47,6 +47,38 @@
                 </div>
                 <div flex-xs="5" flex-sm="10" flex-gt-sm="20"></div>
             </md-list>
+            <md-divider></md-divider>
+            <md-list ng-show="accountData.accountForNewUser.isEnable">
+                <md-list-item ng-show="accountData.accountForNewUser.isEnable">
+                    <div class="md-list-item-text" style="width: 100%;" layout="row" layout-align="space-between center">
+                        <div flex="75" translate>到期自动删除</div>
+                        <div flex layout="row" layout-align="end center"><md-switch ng-model="accountData.accountForNewUser.autoRemove" aria-label="autoremove"></md-switch></div>
+                    </div>
+                </md-list-item>
+            </md-list>
+            <md-divider ng-show="accountData.accountForNewUser.isEnable"></md-divider>
+            <md-list ng-show="accountData.accountForNewUser.isEnable">
+                <md-list-item>
+                    <div class="md-list-item-text" style="width: 100%;" layout="row" layout-align="space-between center">
+                        <div flex="75" translate>自定义新用户可用服务器</div>
+                        <div flex layout="row" layout-align="end center"><md-switch ng-model="setServerForNewUser" aria-label="serverForNewUser"></md-switch></div>
+                    </div>
+                </md-list-item>
+                <md-list-item ng-show="setServerForNewUser">
+                    <div layout="column" layout-wrap flex>
+                        <div layout="column" layout-wrap flex ng-repeat="server in servers">
+                            <div flex="100">
+                                <md-checkbox ng-model="accountServerObj[server.id]">
+                                    <div layout="row" layout-align="space-between center">
+                                        <span flex>{{ server.name }}</span>
+                                        <span flex style="color: #777">{{ server.host }}</span>
+                                    </div>
+                                </md-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                </md-list-item>
+            </md-list>
             <md-divider ng-show="accountData.accountForNewUser.isEnable"></md-divider>
             <md-list>
                 <md-list-item>
@@ -57,21 +89,28 @@
                 </md-list-item>
             </md-list>
             <md-divider ></md-divider>
-            <md-list layout="row">
-                <div flex-xs="5" flex-sm="10" flex-gt-sm="20"></div>
-                <div flex>
-                    <form name="portForm">
-                        <md-input-container class="md-block">
-                            <label>起始端口</label>
-                            <input type="number" required name="startPort" ng-model="accountData.port.start">
-                        </md-input-container>
-                        <md-input-container class="md-block">
-                            <label>结束端口</label>
-                            <input type="number" required name="endPort" ng-model="accountData.port.end">
-                        </md-input-container>
-                    </form>
-                </div>
-                <div flex-xs="5" flex-sm="10" flex-gt-sm="20"></div>
+            <md-list>
+                <md-list-item>
+                    <div class="md-list-item-text" style="width: 100%;" layout="row" layout-align="space-between center">
+                        <div flex="100" translate>新端口号分配范围</div>
+                    </div>
+                </md-list-item>
+                <md-list-item layout="row">
+                    <div flex-xs="5" flex-sm="10" flex-gt-sm="20"></div>
+                    <div flex>
+                        <form name="portForm" layout="column" layout-gt-sm="row">
+                            <md-input-container class="md-block" flex-gt-sm="50">
+                                <label>起始端口</label>
+                                <input type="number" required name="startPort" ng-model="accountData.port.start">
+                            </md-input-container>
+                            <md-input-container class="md-block" flex-gt-sm="50">
+                                <label>结束端口</label>
+                                <input type="number" required name="endPort" ng-model="accountData.port.end">
+                            </md-input-container>
+                        </form>
+                    </div>
+                    <div flex-xs="5" flex-sm="10" flex-gt-sm="20"></div>
+                </md-list-item>
             </md-list>
             <md-divider></md-divider>
             <md-list>

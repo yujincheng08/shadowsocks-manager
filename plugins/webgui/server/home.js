@@ -11,6 +11,12 @@ const emailPlugin = appRequire('plugins/email/index');
 const push = appRequire('plugins/webgui/server/push');
 const macAccount = appRequire('plugins/macAccount/index');
 
+const isTelegram = config.plugins.webgui_telegram && config.plugins.webgui_telegram.use;
+let telegram;
+if(isTelegram) {
+  telegram = appRequire('plugins/webgui_telegram/admin');
+}
+
 const formatMacAddress = mac => {
   return mac.replace(/-/g, '').replace(/:/g, '').toLowerCase();
 };
@@ -97,11 +103,6 @@ exports.signup = (req, res) => {
             }
           });
         };
-        // return knex('account_plugin').select().orderBy('port', 'DESC').limit(1)
-        // .then(success => {
-        //   if(success.length) {
-        //     port = success[0].port + 1;
-        //   }
         getNewPort().then(port => {
           return account.addAccount(newUserAccount.type || 5, {
             user: userId,
@@ -110,7 +111,8 @@ exports.signup = (req, res) => {
             time: Date.now(),
             limit: newUserAccount.limit || 8,
             flow: (newUserAccount.flow ? newUserAccount.flow : 350) * 1000000,
-            autoRemove: 1,
+            server: newUserAccount.server ? JSON.stringify(newUserAccount.server): null,
+            autoRemove: newUserAccount.autoRemove ? 1 : 0,
           });
         });
       });
@@ -122,6 +124,7 @@ exports.signup = (req, res) => {
     push.pushMessage('注册', {
       body: `用户[ ${ req.body.email.toString().toLowerCase() } ]注册成功`,
     });
+    isTelegram && telegram.push(`用户[ ${ req.body.email.toString().toLowerCase() } ]注册成功`);
     res.send('success');
   }).catch(err => {
     logger.error(`[${ req.body.email }] signup fail: ${ err }`);

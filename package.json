@@ -1,7 +1,7 @@
 {
   "name": "shadowsocks-manager-ipv6",
-  "version": "0.10.23",
-  "description": "A shadowsocks manager tool for multi user and traffic control, which also support ipv6",
+  "version": "0.12.1",
+  "description": "A shadowsocks manager tool for multi user and traffic control, which also supports ipv6",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -11,6 +11,7 @@
   "author": "Gu Yuteng <igyteng@gmail.com>; LoveSy <shana@zju.eud.cn>",
   "license": "GPL-3.0",
   "keywords": [
+    "ssmgr",
     "shadowsocks",
     "manager",
     "gfw",
@@ -53,6 +54,7 @@
     "mysql": "^2.13.0",
     "nodemailer": "^4.1.0",
     "paypal-rest-sdk": "^1.7.1",
+    "qr-image": "^3.2.0",
     "request": "^2.75.0",
     "request-promise": "^4.1.1",
     "socks": "^1.1.10",

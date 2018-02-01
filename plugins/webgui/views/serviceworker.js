@@ -1,6 +1,4 @@
-// importScripts('/libs/serviceworker-cache-polyfill.js');
-
-const ONLINE_CACHE_NAME = '2017-12-05 01:05:23' + ' <%= serviceWorkerTime%>';
+const ONLINE_CACHE_NAME = '2018-01-31 10:05:37' + ' <%= serviceWorkerTime%>';
 const isSWOpen = JSON.parse('<%= serviceWorker%>');
 
 const emptyCacheUrl = [];
@@ -41,6 +39,7 @@ const onlineCacheUrl = [
   '/public/views/home/index.html',
   '/public/views/home/login.html',
   '/public/views/home/macLogin.html',
+  '/public/views/home/telegramLogin.html',
   '/public/views/home/resetPassword.html',
   '/public/views/home/signup.html',
 
@@ -61,6 +60,7 @@ const onlineCacheUrl = [
   '/public/views/admin/baseSetting.html',
   '/public/views/admin/editAccount.html',
   '/public/views/admin/editNotice.html',
+  '/public/views/admin/editPayment.html',
   '/public/views/admin/editServer.html',
   '/public/views/admin/index.html',
   '/public/views/admin/mailSetting.html',
@@ -68,6 +68,7 @@ const onlineCacheUrl = [
   '/public/views/admin/notice.html',
   '/public/views/admin/orderFilterDialog.html',
   '/public/views/admin/pay.html',
+  '/public/views/admin/paymentList.html',
   '/public/views/admin/paymentSetting.html',
   '/public/views/admin/pickAccount.html',
   '/public/views/admin/pickTime.html',
@@ -75,6 +76,7 @@ const onlineCacheUrl = [
   '/public/views/admin/server.html',
   '/public/views/admin/serverPage.html',
   '/public/views/admin/settings.html',
+  '/public/views/admin/telegramSetting.html',
   '/public/views/admin/unfinished.html',
   '/public/views/admin/user.html',
   '/public/views/admin/userPage.html',
