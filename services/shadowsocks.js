@@ -5,6 +5,7 @@ const dgram = require('dgram');
 const client = dgram.createSocket('udp4');
 const version = appRequire('package').version;
 const exec = require('child_process').exec;
+const http = require('http');
 
 let clientIp = [];
 
@@ -35,11 +36,14 @@ const setExistPort = flow => {
 };
 
 let firstFlow = true;
+let portsForLibev = [];
 const connect = () => {
   client.on('message', async (msg, rinfo) => {
     const msgStr = new String(msg);
     if(msgStr.substr(0, 4) === 'pong') {
       shadowsocksType = 'python';
+    } else if(msgStr.substr(0, 3) === '[\n\t') {
+      portsForLibev = JSON.parse(msgStr);
     } else if(msgStr.substr(0, 5) === 'stat:') {
       let flow = JSON.parse(msgStr.substr(5));
       setExistPort(flow);
@@ -48,12 +52,6 @@ const connect = () => {
       for(const rf in realFlow) {
         if(realFlow[rf]) {
           (function(port) {
-            // if(!clientIp[+port]) { clientIp[+port] = []; }
-            // getIp(+port).then(ip => {
-            //   if(ip.length) {
-            //     clientIp[+port].push({ time: Date.now(), ip });
-            //   }
-            // });
             getIp(+port).then(ips => {
               ips.forEach(ip => {
                 clientIp.push({ port: +port, time: Date.now(), ip });
@@ -74,20 +72,34 @@ const connect = () => {
       }).filter(f => {
         return f.flow > 0;
       });
-      const accounts = await knex('account').select([ 'port' ]);
-      insertFlow.forEach(fe => {
-        const account = accounts.filter(f => {
-          return fe.port === f.port;
-        })[0];
-        if(!account) {
-          sendMessage(`remove: {"server_port": ${ fe.port }}`);
-        }
-      });
+      const accounts = await knex('account').select();
+      if(shadowsocksType === 'python') {
+        insertFlow.forEach(fe => {
+          const account = accounts.filter(f => {
+            return fe.port === f.port;
+          })[0];
+          if(!account) {
+            sendMessage(`remove: {"server_port": ${ fe.port }}`);
+          }
+        });
+      } else {
+        portsForLibev.forEach(async f => {
+          const account = accounts.filter(a => a.port === +f.server_port)[0];
+          if(!account) {
+            await sendMessage(`remove: {"server_port": ${ f.server_port }}`);
+          } else if (account.password !== f.password) {
+            await sendMessage(`remove: {"server_port": ${ f.server_port }}`);
+            await sendMessage(`add: {"server_port": ${ account.port }, "password": "${ account.password }"}`);
+          } else if (account.method && account.method !== f.method) {
+            await sendMessage(`remove: {"server_port": ${ f.server_port }}`);
+            await sendMessage(`add: {"server_port": ${ account.port }, "password": "${ account.password }"}`);
+          }
+        });
+      }
       if(insertFlow.length > 0) {
         if(firstFlow) {
           firstFlow = false;
         } else {
-          // knex('flow').insert(insertFlow).then();
           const insertPromises = [];
           for(let i = 0; i < Math.ceil(insertFlow.length/50); i++) {
             const insert = knex('flow').insert(insertFlow.slice(i * 50, i * 50 + 50));
@@ -170,6 +182,9 @@ cron.minute(() => {
   resend();
   sendPing();
 }, 1);
+cron.minute(() => {
+  getGfwStatus();
+}, 10);
 
 const checkPortRange = (port) => {
   if(!config.shadowsocks.portRange) { return true; }
@@ -277,8 +292,43 @@ const getFlow = async (options) => {
   }
 };
 
+let isGfw = false;
+const getGfwStatus = () => {
+  const sites = [
+    'baidu.com:80',
+    'qq.com:80',
+    'taobao.com:80',
+  ];
+  const site = sites[+Math.random().toString().substr(2) % sites.length];
+  const req = http.request({
+    hostname: site.split(':')[0],
+    port: +site.split(':')[1],
+    path: '/',
+    method: 'GET',
+    timeout: 2000,
+  }, res => {
+    if(res.statusCode === 200) {
+      isGfw = false;
+    }
+    res.setEncoding('utf8');
+    res.on('data', (chunk) => {});
+    res.on('end', () => {});
+  });
+  req.on('timeout', () => {
+    req.abort();
+    isGfw = true;
+  });
+  req.on('error', (e) => {
+    isGfw = true;
+  });
+  req.end();
+};
+
 const getVersion = () => {
-  return { version };
+  return {
+    version,
+    isGfw,
+  };
 };
 
 const getIp = port => {
@@ -299,22 +349,6 @@ const getIp = port => {
 };
 
 const getClientIp = port => {
-  // const result = [];
-  // if(!clientIp[port] || clientIp[port].length === 0) { return result; }
-  // const recentIp = clientIp[port][clientIp[port].length - 1].ip;
-  // clientIp[port] = clientIp[port].filter(m => {
-  //   return Date.now() - m.time <= 60 * 60 * 1000;
-  // });
-  // clientIp[port].forEach(ci => {
-  //   ci.ip.forEach(i => {
-  //     if(result.indexOf(i) < 0) { result.push(i); }
-  //   });
-  // });
-  // if(!result.length) {
-  //   clientIp[port].push({ time: Date.now(), ip: recentIp });
-  //   return recentIp;
-  // }
-  // return result;
   clientIp = clientIp.filter(f => {
     return Date.now() - f.time <= 15 * 60 * 1000;
   });

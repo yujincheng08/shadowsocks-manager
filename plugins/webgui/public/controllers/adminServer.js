@@ -68,6 +68,7 @@ app.controller('AdminServerController', ['$scope', '$http', '$state', 'moment', 
             server.name = servers[index].name;
             server.port = servers[index].port;
             server.status = servers[index].status;
+            server.isGfw = servers[index].isGfw;
             adminApi.getServerFlow(server.id).then(flow => {
               if(!server.flow) {
                 server.flow = {};
@@ -98,7 +99,7 @@ app.controller('AdminServerController', ['$scope', '$http', '$state', 'moment', 
             data: servers,
           };
           $scope.servers = servers;
-          $scope.servers.forEach(server => {
+          $scope.servers.forEach((server, index) => {
             adminApi.getServerFlow(server.id).then(flow => {
               server.flow = flow;
             });

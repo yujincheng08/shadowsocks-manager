@@ -57,10 +57,23 @@ const newAccount = (mac, userId, serverId, accountId) => {
 };
 
 const getAccount = async userId => {
-  const accounts = await knex('mac_account').where({
+  const macAccounts = await knex('mac_account').where({
     'mac_account.userId': userId,
   });
-  return accounts;
+  const accounts = await knex('account_plugin').where({ userId });
+  macAccounts.forEach(macAccount => {
+    const isExists = accounts.filter(f => {
+      return f.id === macAccount.accountId;
+    })[0];
+    if(!isExists && accounts.length) {
+      knex('mac_account').update({
+        accountId: accounts[0].id
+      }).where({
+        id: macAccount.id
+      }).then();
+    }
+  });
+  return macAccounts;
 };
 
 const getAccountForUser = async (mac, ip) => {
@@ -72,6 +85,7 @@ const getAccountForUser = async (mac, ip) => {
     loginFail(ip);
     return Promise.reject('mac account not found');
   }
+  await getAccount(macAccount.userId);
   const myServerId = macAccount.serverId;
   const myAccountId = macAccount.accountId;
   const accounts = await knex('mac_account').select([
@@ -156,7 +170,6 @@ const getAccountForUser = async (mac, ip) => {
       return serverInfo;
     });
   });
-
   const serverReturn = await Promise.all(serverList);
   const data = {
     default: {
@@ -184,7 +197,7 @@ const editAccount = (id, mac, serverId, accountId) => {
 };
 
 const deleteAccount = id => {
-  return knex('mac_account').delete().where({ id });
+  return knex('mac_account').delete().where({ id }).then();
 };
 
 const login = async (mac, ip) => {
@@ -221,6 +234,12 @@ const getAllAccount = async () => {
   return accounts;
 };
 
+const getAccountByUserId = userId => {
+  return knex('mac_account').where({
+    userId
+  });
+};
+
 const removeInvalidMacAccount = async () => {
   const accounts = await knex('mac_account').select([
     'mac_account.id as id',
@@ -228,11 +247,11 @@ const removeInvalidMacAccount = async () => {
     'mac_account.userId as userId',
     'mac_account.accountId as accountId',
     'mac_account.serverId as serverId',
-    'account_plugin.port as port',
-  ]).leftJoin('account_plugin', 'mac_account.accountId', 'account_plugin.id')
+    'user.username as username',
+  ]).leftJoin('user', 'mac_account.userId', 'user.id')
   .where({});
   accounts.filter(f => {
-    return f.port === null;
+    return f.username === null;
   }).forEach(account => {
     knex('mac_account').where({ id: account.id }).del().then();
   });
@@ -247,3 +266,4 @@ exports.getAccountForUser = getAccountForUser;
 exports.login = login;
 exports.getAccountByAccountId = getAccountByAccountId;
 exports.getAllAccount = getAllAccount;
+exports.getAccountByUserId = getAccountByUserId;

@@ -6,7 +6,7 @@ const config = appRequire('services/config').all();
 const macAccount = appRequire('plugins/macAccount/index');
 
 const addAccount = async (type, options) => {
-  checkAccount.deleteCheckAccountTimePort(options.port);
+  await checkAccount.deleteCheckAccountTimePort(options.port);
   if(type === 6 || type === 7) {
     type = 3;
   }
@@ -77,12 +77,12 @@ const getAccount = async (options = {}) => {
 };
 
 const delAccount = async (id) => {
-  const macAccounts = await macAccount.getAccountByAccountId(id);
-  if(macAccounts.length) {
-    macAccounts.forEach(f => {
-      macAccount.deleteAccount(f.id);
-    });
-  }
+  // const macAccounts = await macAccount.getAccountByAccountId(id);
+  // if(macAccounts.length) {
+  //   macAccounts.forEach(f => {
+  //     macAccount.deleteAccount(f.id);
+  //   });
+  // }
   const result = await knex('account_plugin').delete().where({ id });
   if(!result) {
     return Promise.reject('Account id[' + id + '] not found');
@@ -92,7 +92,7 @@ const delAccount = async (id) => {
 };
 
 const editAccount = async (id, options) => {
-  checkAccount.deleteCheckAccountTimePort(options.port);
+  await checkAccount.deleteCheckAccountTimePort(options.port);
   const account = await knex('account_plugin').select().where({ id }).then(success => {
     if(success.length) {
       return success[0];
@@ -351,7 +351,7 @@ const setAccountLimit = async (userId, accountId, orderType) => {
     server: paymentInfo[paymentType].server ? JSON.stringify(paymentInfo[paymentType].server) : null,
     autoRemove: paymentInfo[paymentType].autoRemove ? 1 : 0,
   }).where({ id: accountId });
-  checkAccount.deleteCheckAccountTimePort(port);
+  await checkAccount.deleteCheckAccountTimePort(port);
   return;
 };
 
